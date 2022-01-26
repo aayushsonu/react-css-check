@@ -1,23 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import axios from "axios";
+import { useEffect, useState } from "react";
+import "./App.css";
+import CommentContainer from "./comment";
+
+const api = axios.create({
+  baseURL: `https://jsonplaceholder.typicode.com/`,
+});
 
 function App() {
+  const [comments, setComments] = useState();
+
+  useEffect(() => {
+    api
+      .get("/comments")
+      .then((data) => {
+        console.log(data.data);
+        setComments(data.data);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>{comments && comments.length} comments</h1>
+      <CommentContainer key="#" />
+      <br />
+      {comments &&
+        comments.map((comment, index) => {
+          return (
+            <div key={comment.id}>
+              <CommentContainer name={comment.name} comment={comment.body} />
+              <br />
+            </div>
+          );
+        })}
     </div>
   );
 }
